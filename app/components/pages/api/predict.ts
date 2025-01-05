@@ -1,8 +1,9 @@
 // pages/api/predict.ts
 import { exec } from 'child_process';
 import path from 'path';
+import { NextApiRequest, NextApiResponse } from 'next';
 
-export default function handler(req, res) {
+export default function handler(req: NextApiRequest, res: NextApiResponse) {
   const cryptoSymbolParam = req.query.cryptoSymbol;
   const cryptoSymbol = Array.isArray(cryptoSymbolParam) 
     ? cryptoSymbolParam[0].toUpperCase() 
