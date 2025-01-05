@@ -53,14 +53,12 @@ interface ChartData extends ChartJSData<"line", number[], unknown> {
   datasets: Dataset[];
 }
 
-interface Annotation extends AnnotationOptions<'box'> {
-  // You can add custom properties if needed
-}
+
 
 interface ChartOptions extends ChartJSOptions<"line"> {
   plugins: {
     annotation: {
-      annotations: Record<string, Annotation>;
+      annotations: Record<string, AnnotationOptions>;
     };
     // Add other plugin options if necessary
   };
@@ -82,7 +80,7 @@ const ChartComponent: React.FC<ChartComponentProps> = ({ chartData, options, mar
     }
   };
 
-  const annotations: Record<string, Annotation> = {};
+  const annotations: Record<string, AnnotationOptions> = {};
 
   marketCycles.forEach((cycle, index) => {
     annotations[`box${index}`] = {
