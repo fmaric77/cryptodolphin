@@ -19,9 +19,17 @@ interface VolumeData {
 }
 
 interface ChartData {
-  labels: Date[];
-  datasets: any[];
-}
+    labels: Date[];
+    datasets: Array<{
+      type: string;
+      label: string;
+      data: number[];
+      yAxisID: string;
+      borderColor?: string[];
+      backgroundColor?: string[];
+      tension?: number;
+    }>;
+  }
 
 export default function CryptoChartPage({
   params,
@@ -70,14 +78,14 @@ export default function CryptoChartPage({
             Authorization: `Bearer add42bd3-a514-4681-b512-f803c1c0093f`,
           },
         });
-        const prices: PriceData[] = response.data.data.map((p: any) => ({
-          x: new Date(p.time),
-          y: parseFloat(p.priceUsd),
-        }));
-        const volumes: VolumeData[] = response.data.data.map((p: any) => ({
-          x: new Date(p.time),
-          y: p.volumeUsd24Hr ? parseFloat(p.volumeUsd24Hr) : 0,
-        }));
+        const prices: PriceData[] = response.data.data.map((p: { time: string; priceUsd: string }) => ({
+            x: new Date(p.time),
+            y: parseFloat(p.priceUsd),
+          }));
+          const volumes: VolumeData[] = response.data.data.map((p: { time: string; volumeUsd24Hr?: string }) => ({
+            x: new Date(p.time),
+            y: p.volumeUsd24Hr ? parseFloat(p.volumeUsd24Hr) : 0,
+          }));
         setChartData({
           labels: prices.map((item) => item.x),
           datasets: [
@@ -190,7 +198,7 @@ export default function CryptoChartPage({
         }
       },
       annotation: {
-        annotations: showMarketCycles ? marketCycles.map((cycle, index) => ({
+        annotations: showMarketCycles ? marketCycles.map((cycle) => ({
           type: 'box',
           xMin: cycle.start,
           xMax: cycle.end,

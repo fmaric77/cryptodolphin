@@ -15,7 +15,7 @@ export default function handler(req, res) {
 
   const scriptPath = path.resolve(process.cwd(), 'app/components/predict.py');
 
-  exec(`python3 ${scriptPath} ${cryptoSymbol}`, (error, stdout, stderr) => {
+  exec(`python3 ${scriptPath} ${cryptoSymbol}`, (error, stdout) => {
     if (error) {
       console.error(`exec error: ${error}`);
       res.status(500).json({ error: 'Failed to execute prediction script' });

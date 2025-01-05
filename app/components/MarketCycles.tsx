@@ -1,5 +1,4 @@
 import React from "react";
-import * as ss from "simple-statistics";
 
 interface MarketCycle {
   start: Date;
@@ -25,17 +24,8 @@ const MarketCycles: React.FC<MarketCyclesProps> = ({ enabled }) => {
   if (!enabled) return null;
 
   const predictFutureCycles = () => {
-    const halvingDates = [
-      new Date("2012-11-28"),
-      new Date("2016-07-09"),
-      new Date("2020-05-11"),
-      new Date("2024-04-01"), // Expected date
-    ];
-
-    const averageBullMarketDuration = 2.5 * 365; // 2.5 years in days
     const averageBearMarketDuration = 1.5 * 365; // 1.5 years in days
 
-    const recentBullMarket = marketCycles[marketCycles.length - 1];
     let predictedBullEnd = new Date("2025-10-01"); // Estimated end of the current bull market
 
     // Ensure the predicted end date is not less than the current date

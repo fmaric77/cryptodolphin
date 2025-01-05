@@ -4,6 +4,20 @@ import axios from "axios";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
+interface Crypto {
+  id: string;
+  rank: string;
+  symbol: string;
+  name: string;
+  supply: string;
+  maxSupply: string | null;
+  marketCapUsd: string;
+  volumeUsd24Hr: string;
+  priceUsd: string;
+  changePercent24Hr: string;
+  vwap24Hr: string;
+}
+
 const Header = () => (
   <header className="flex justify-between items-center mb-12">
     <Image
@@ -18,7 +32,7 @@ const Header = () => (
   </header>
 );
 
-const SearchInput = ({ search, setSearch }) => (
+const SearchInput = ({ search, setSearch }: { search: string; setSearch: (value: string) => void }) => (
   <div className="mb-8">
     <input
       type="text"
@@ -30,7 +44,7 @@ const SearchInput = ({ search, setSearch }) => (
   </div>
 );
 
-const CryptoCard = ({ crypto, onClick }) => (
+const CryptoCard = ({ crypto, onClick }: { crypto: Crypto; onClick: () => void }) => (
   <div
     key={crypto.id}
     className="bg-gray-800 p-4 rounded-lg shadow-lg cursor-pointer w-full"
@@ -70,8 +84,8 @@ const CryptoCard = ({ crypto, onClick }) => (
 
 export default function Home() {
   const router = useRouter();
-  const [cryptos, setCryptos] = useState<any[]>([]);
-  const [filteredCryptos, setFilteredCryptos] = useState<any[]>([]);
+  const [cryptos, setCryptos] = useState<Crypto[]>([]);
+  const [filteredCryptos, setFilteredCryptos] = useState<Crypto[]>([]);
   const [search, setSearch] = useState("");
 
   useEffect(() => {
