@@ -19,11 +19,22 @@ interface VolumeData {
   x: Date;
   y: number;
 }
+interface AssetData {
+  symbol: string;
+  id: string;
+  name: string;
+  priceUsd: string;
+  volumeUsd24Hr: string;
+  marketCapUsd: string;
+  supply: string;
+  maxSupply: string | null;
+  changePercent24Hr: string;
+  rank: string;
+}
+
 interface AssetResponse {
-  data: {
-    symbol: string;
-    [key: string]: any;
-  };
+  data: AssetData;
+  timestamp: number;
 }
 
 interface HistoricalDataPoint {
