@@ -1,7 +1,6 @@
-// app/components/ChartComponent.tsx
 import React from "react";
 import { Line } from "react-chartjs-2";
-import { Chart as ChartJS, LineElement, BarElement, PointElement, LinearScale, TimeScale, CategoryScale, Tooltip, Legend, Filler, ScriptableContext } from "chart.js";
+import { Chart as ChartJS, LineElement, BarElement, PointElement, LinearScale, TimeScale, CategoryScale, Tooltip, Legend, Filler, ScriptableContext, ChartOptions, ScriptableLineSegmentContext } from "chart.js";
 import "chartjs-adapter-date-fns";
 
 ChartJS.register(
@@ -16,20 +15,34 @@ ChartJS.register(
   Filler
 );
 
-interface ChartComponentProps {
-  chartData: any;
-  predictionData?: { labels: Date[]; data: number[] };
-  options: any;
+interface Dataset {
+  label?: string;
+  data: number[];
+  borderColor: string[];
+  backgroundColor?: string;
+  fill?: boolean;
+  tension?: number;
 }
 
-const ChartComponent: React.FC<ChartComponentProps> = ({ chartData, predictionData, options }) => {
+interface ChartData {
+  labels: (string | Date)[];
+  datasets: Dataset[];
+}
+
+interface ChartComponentProps {
+  chartData: ChartData;
+  predictionData?: { labels: Date[]; data: number[] };
+  options: ChartOptions<'line'>;
+}
+
+const ChartComponent: React.FC<ChartComponentProps> = ({ chartData, options }) => {
   const formattedData = {
     ...chartData,
-    datasets: chartData.datasets.map((dataset: any) => ({
+    datasets: chartData.datasets.map((dataset: Dataset) => ({
       ...dataset,
       segment: {
-        borderColor: (ctx: ScriptableContext<'line'>) => {
-          const index = ctx.dataIndex;
+        borderColor: (ctx: ScriptableLineSegmentContext) => {
+          const index = ctx.p0DataIndex;
           const color = dataset.borderColor[index] || "gray";
           return color;
         },

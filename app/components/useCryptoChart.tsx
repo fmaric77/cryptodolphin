@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { marketCycles } from "../components/MarketCycles"; // Adjust the path if necessary
+import { ChartData } from "chart.js";
 
 interface PredictionData {
   ds: string;
@@ -18,6 +19,23 @@ interface VolumeData {
   x: Date;
   y: number;
 }
+interface AssetResponse {
+  data: {
+    symbol: string;
+    [key: string]: any;
+  };
+}
+
+interface HistoricalDataPoint {
+  time: string;
+  priceUsd: string;
+  volumeUsd24Hr?: string;
+}
+
+interface HistoricalResponse {
+  data: HistoricalDataPoint[];
+}
+
 
 function getMarketColor(date: Date): string {
   const cycle = marketCycles.find(
@@ -28,7 +46,7 @@ function getMarketColor(date: Date): string {
 }
 
 export function useCryptoChart(id: string, range: string, showPrediction: boolean) {
-  const [chartData, setChartData] = useState<any>(null);
+  const [chartData, setChartData] = useState<ChartData | null>(null);
   const [predictionData, setPredictionData] = useState<{ labels: Date[]; data: number[] } | null>(null);
   const [symbol, setSymbol] = useState("");
   const [loading, setLoading] = useState(true);
@@ -71,13 +89,14 @@ export function useCryptoChart(id: string, range: string, showPrediction: boolea
       setError(null);
 
       try {
-        const assetResponse = await axios.get(
+        const assetResponse = await axios.get<AssetResponse>(
           `https://api.coincap.io/v2/assets/${id.toLowerCase()}`
         );
+        
         setSymbol(assetResponse.data.data.symbol);
 
         const { startTime, endTime, interval } = getTimeRange(range);
-        const response = await axios.get(
+        const response = await axios.get<HistoricalResponse>(
           `https://api.coincap.io/v2/assets/${id.toLowerCase()}/history`,
           {
             params: { interval, start: startTime, end: endTime },
@@ -87,15 +106,16 @@ export function useCryptoChart(id: string, range: string, showPrediction: boolea
           }
         );
 
-        const prices: PriceData[] = response.data.data.map((p: any) => ({
+        const prices: PriceData[] = response.data.data.map((p: HistoricalDataPoint) => ({
           x: new Date(p.time),
           y: parseFloat(p.priceUsd),
         }));
-
-        const volumes: VolumeData[] = response.data.data.map((p: any) => ({
+        
+        const volumes: VolumeData[] = response.data.data.map((p: HistoricalDataPoint) => ({
           x: new Date(p.time),
           y: p.volumeUsd24Hr ? parseFloat(p.volumeUsd24Hr) : 0,
         }));
+        
 
         const borderColors = prices.map((item) => getMarketColor(item.x));
 
@@ -125,8 +145,8 @@ export function useCryptoChart(id: string, range: string, showPrediction: boolea
             },
           ],
         });
-      } catch (err) {
-        setError("Failed to fetch data");
+      } catch (error) {
+        setError(error instanceof Error ? error.message : "Failed to fetch data");
       } finally {
         setLoading(false);
       }
@@ -152,8 +172,8 @@ export function useCryptoChart(id: string, range: string, showPrediction: boolea
           labels: forecast.map((row) => new Date(row.ds)),
           data: forecast.map((row) => row.yhat),
         });
-      } catch (err: any) {
-        setError(err.message || "Failed to predict future prices");
+      } catch (error:unknown) {
+        setError(error instanceof Error ? error.message : "Failed to predict future prices");
       }
     };
 
