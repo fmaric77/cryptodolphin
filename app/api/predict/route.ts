@@ -1,9 +1,11 @@
-// app/api/predict/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { exec } from 'child_process';
 import path from 'path';
+import { promisify } from 'util';
 
-export async function GET(request: NextRequest) {
+const execAsync = promisify(exec);
+
+export async function GET(request: NextRequest): Promise<Response> {
   const { searchParams } = new URL(request.url);
   const cryptoSymbolParam = searchParams.get('cryptoSymbol');
   const cryptoSymbol = cryptoSymbolParam?.toUpperCase();
@@ -16,43 +18,29 @@ export async function GET(request: NextRequest) {
   // Resolve the path to the Python script
   const scriptPath = path.resolve(process.cwd(), 'app/components/predict.py');
 
-  return new Promise((resolve) => {
-    exec(`python3 ${scriptPath} ${cryptoSymbol}`, (error, stdout) => {
-      if (error) {
-        console.error(`Execution error: ${error}`);
-        resolve(
-          NextResponse.json(
-            { error: 'Failed to execute prediction script' },
-            { status: 500 }
-          )
-        );
-        return;
+  try {
+    const { stdout } = await execAsync(`python3 ${scriptPath} ${cryptoSymbol}`);
+    
+    try {
+      const data = JSON.parse(stdout);
+      
+      if (data.error) {
+        return NextResponse.json({ error: data.error }, { status: 400 });
       }
-      try {
-        const data = JSON.parse(stdout);
-        
-        // Check if the Python script returned an error
-        if (data.error) {
-          resolve(
-            NextResponse.json(
-              { error: data.error },
-              { status: 400 }
-            )
-          );
-        } else {
-          resolve(
-            NextResponse.json(data, { status: 200 })
-          );
-        }
-      } catch (parseError) {
-        console.error(`JSON parse error: ${parseError}`);
-        resolve(
-          NextResponse.json(
-            { error: 'Invalid JSON output from prediction script' },
-            { status: 500 }
-          )
-        );
-      }
-    });
-  });
+      
+      return NextResponse.json(data, { status: 200 });
+    } catch (parseError) {
+      console.error(`JSON parse error: ${parseError}`);
+      return NextResponse.json(
+        { error: 'Invalid JSON output from prediction script' },
+        { status: 500 }
+      );
+    }
+  } catch (error) {
+    console.error(`Execution error: ${error}`);
+    return NextResponse.json(
+      { error: 'Failed to execute prediction script' },
+      { status: 500 }
+    );
+  }
 }
