@@ -46,7 +46,8 @@ const ChartComponent: React.FC<ChartComponentProps> = ({ chartData, options }) =
       segment: {
         borderColor: (ctx: ScriptableLineSegmentContext) => {
           const index = ctx.p0DataIndex;
-          const color = dataset.borderColor?.[index] || "gray";
+          const borderColor = dataset.borderColor;
+          const color = Array.isArray(borderColor) ? borderColor[index] : "gray";
           return color;
         },
       },
