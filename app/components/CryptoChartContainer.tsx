@@ -4,7 +4,7 @@ import Link from "next/link";
 import ChartComponent from "./ChartComponent";
 import RangeButtons from "./RangeButtons";
 import MarketCycles from "./MarketCycles";
-import { ChartOptions } from "chart.js";
+import { ChartOptions, ChartDataset } from "chart.js";
 import { useCryptoChart } from "./useCryptoChart";
 
 export default function CryptoChartContainer({ params }: { params: Promise<{ id: string }> }) {
@@ -13,7 +13,7 @@ export default function CryptoChartContainer({ params }: { params: Promise<{ id:
   const [showMarketCycles, setShowMarketCycles] = useState(false);
   const [showPrediction, setShowPrediction] = useState(false);
   const { chartData, predictionData, loading, error } = useCryptoChart(id, range, showPrediction) as {
-    chartData: { labels: (string | Date)[]; datasets: any[] };
+    chartData: { labels: (string | Date)[]; datasets: ChartDataset<"line", number[]>[] };
     predictionData?: { labels: Date[]; data: number[] };
     loading: boolean;
     error: string | null;
