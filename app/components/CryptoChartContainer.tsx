@@ -12,7 +12,12 @@ export default function CryptoChartContainer({ params }: { params: Promise<{ id:
   const [range, setRange] = useState("all");
   const [showMarketCycles, setShowMarketCycles] = useState(false);
   const [showPrediction, setShowPrediction] = useState(false);
-  const { chartData, predictionData, loading, error } = useCryptoChart(id, range, showPrediction);
+  const { chartData, predictionData, loading, error } = useCryptoChart(id, range, showPrediction) as {
+    chartData: { labels: (string | Date)[]; datasets: any[] };
+    predictionData?: { labels: Date[]; data: number[] };
+    loading: boolean;
+    error: string | null;
+  };
 
   const options: ChartOptions<"line"> = {
     /* simplified example, same config as yours */
