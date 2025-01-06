@@ -34,15 +34,13 @@ interface ForecastRow {
 
 interface PredictionData {
   labels: Date[];
-  datasets: Dataset[];
-}
-
-interface Dataset {
-  label: string;
-  data: number[];
-  borderColor: string;
-  backgroundColor: string;
-  fill: boolean;
+  datasets: {
+    label: string;
+    data: number[];
+    borderColor: string;
+    backgroundColor: string;
+    fill: boolean;
+  }[];
 }
 
 interface PricePredictionProps {
@@ -88,34 +86,9 @@ const PricePrediction: React.FC<PricePredictionProps> = ({ cryptoSymbol }) => {
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
 
-  const options: ChartJSOptions<"line"> = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: 'top',
-      },
-      title: {
-        display: true,
-        text: `Predicted ${cryptoSymbol.toUpperCase()} Price Movement`,
-      },
-    },
-    scales: {
-      x: {
-        type: 'time',
-        time: {
-          unit: 'month',
-        },
-      },
-      y: {
-        beginAtZero: false,
-      },
-    },
-  };
-
   return (
     <div>
-      <h2 className="text-xl font-bold mb-4">Predicted {cryptoSymbol.toUpperCase()} Price Movement</h2>
-      {predictionData && <Line data={predictionData} options={options} />}
+      {predictionData && <Line data={predictionData} options={{ /* your chart options */ } as ChartJSOptions<"line">} />}
     </div>
   );
 };
