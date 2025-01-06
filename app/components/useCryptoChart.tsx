@@ -20,7 +20,7 @@ export function useCryptoChart(id: string, range: string, showPrediction: boolea
         const response = await axios.get(`/api/crypto/${id}?range=${range}`);
         const { prices, volumes } = response.data;
 
-        const borderColors: string[] = prices.map((item: { x: string | Date }) => getMarketColor());
+        const borderColors: string[] = prices.map(() => getMarketColor());
 
         setChartData({
           labels: prices.map((item: { x: string | Date }) => item.x),
