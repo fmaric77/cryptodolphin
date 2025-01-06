@@ -5,7 +5,7 @@ import { ChartDataset } from "chart.js";
 export function useCryptoChart(id: string, range: string, showPrediction: boolean) {
   const [chartData, setChartData] = useState<{
     labels: (string | Date)[];
-    datasets: ChartDataset<"line", number[]>[];
+    datasets: (ChartDataset<"line", number[]> | ChartDataset<"bar", number[]>)[];
   } | null>(null);
   const [predictionData, setPredictionData] = useState<{ labels: Date[]; data: number[] } | null>(null);
   const [loading, setLoading] = useState(true);
@@ -35,14 +35,14 @@ export function useCryptoChart(id: string, range: string, showPrediction: boolea
               pointBackgroundColor: borderColors,
               pointBorderColor: borderColors,
               fill: false,
-            },
+            } as ChartDataset<"line", number[]>,
             {
               type: "bar",
               label: "Volume",
               data: volumes.map((item: { y: number }) => item.y),
               yAxisID: "y1",
               backgroundColor: "rgba(107, 114, 128, 0.5)",
-            },
+            } as ChartDataset<"bar", number[]>,
           ],
         });
 
