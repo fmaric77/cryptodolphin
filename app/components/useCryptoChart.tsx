@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { ChartDataset } from "chart.js";
 
 export function useCryptoChart(id: string, range: string, showPrediction: boolean) {
   const [chartData, setChartData] = useState<{
@@ -19,7 +20,7 @@ export function useCryptoChart(id: string, range: string, showPrediction: boolea
         const response = await axios.get(`/api/crypto/${id}?range=${range}`);
         const { prices, volumes } = response.data;
 
-        const borderColors: string[] = prices.map((item: { x: string | Date }) => getMarketColor(item.x));
+        const borderColors: string[] = prices.map((item: { x: string | Date }) => getMarketColor());
 
         setChartData({
           labels: prices.map((item: { x: string | Date }) => item.x),
@@ -64,7 +65,7 @@ export function useCryptoChart(id: string, range: string, showPrediction: boolea
   return { chartData, predictionData, loading, error };
 }
 
-function getMarketColor(date: string | Date): string {
-  // Implement your logic to determine the market color based on the date
+function getMarketColor(): string {
+  // Implement your logic to determine the market color
   return "blue"; // Example color
 }
